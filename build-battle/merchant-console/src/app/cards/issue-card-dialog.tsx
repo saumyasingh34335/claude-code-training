@@ -20,13 +20,11 @@ import {
   SelectValue,
 } from "@/components/Select"
 import { merchants } from "@/data/merchants"
-import { CardCategory, Currency } from "@/data/types"
+import { CardCategory } from "@/data/types"
 import { parseAmountToMinorUnits } from "@/lib/money"
 import { Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-
-const CURRENCIES: Currency[] = ["USD", "EUR", "GBP"]
 
 const CATEGORIES: { value: CardCategory; label: string }[] = [
   { value: "vendor_subscriptions", label: "Vendor subscriptions" },
@@ -42,20 +40,22 @@ export function IssueCardDialog() {
   const [nickname, setNickname] = useState("")
   const [merchantId, setMerchantId] = useState("")
   const [limitInput, setLimitInput] = useState("")
-  const [currency, setCurrency] = useState<Currency>("USD")
   const [category, setCategory] = useState<CardCategory | "">("")
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [created, setCreated] = useState<CreatedCard | null>(null)
+  const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID())
+
+  const selectedMerchant = merchants.find((m) => m.id === merchantId)
 
   function reset() {
     setNickname("")
     setMerchantId("")
     setLimitInput("")
-    setCurrency("USD")
     setCategory("")
     setError(null)
     setCreated(null)
+    setIdempotencyKey(crypto.randomUUID())
   }
 
   async function handleSubmit(event: React.FormEvent) {
@@ -77,8 +77,9 @@ export function IssueCardDialog() {
           nickname,
           merchantId,
           limit,
-          currency,
+          currency: selectedMerchant?.currency,
           category: category || undefined,
+          idempotencyKey,
         }),
       })
       const body = await response.json()
@@ -87,6 +88,7 @@ export function IssueCardDialog() {
         return
       }
       setCreated({ number: body.number, last4: body.card.last4, nickname: body.card.nickname })
+      setIdempotencyKey(crypto.randomUUID())
       router.refresh()
     } catch {
       setError("Could not reach the server. Check your connection and try again.")
@@ -213,20 +215,18 @@ export function IssueCardDialog() {
                   >
                     Currency
                   </label>
-                  <Select value={currency} onValueChange={(v) => setCurrency(v as Currency)}>
-                    <SelectTrigger id="card-currency" className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CURRENCIES.map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {c}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Input
+                    id="card-currency"
+                    className="mt-1"
+                    readOnly
+                    value={selectedMerchant?.currency ?? ""}
+                    placeholder="—"
+                  />
                 </div>
               </div>
+              <p className="-mt-2 text-xs text-gray-500">
+                Currency follows the merchant and can&rsquo;t be changed here.
+              </p>
 
               <div>
                 <label

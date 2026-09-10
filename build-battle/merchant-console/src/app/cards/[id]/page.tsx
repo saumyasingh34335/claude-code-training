@@ -1,7 +1,7 @@
 import { Divider } from "@/components/Divider"
 import { cardById } from "@/data/cards"
 import { merchantById } from "@/data/merchants"
-import { formatDate } from "@/lib/dates"
+import { formatDate, formatInZone } from "@/lib/dates"
 import { formatMoney } from "@/lib/money"
 import { cx } from "@/lib/utils"
 import Link from "next/link"
@@ -107,8 +107,38 @@ export default async function CardDetail({
           </p>
         )}
       </div>
+
+      <Divider />
+
+      <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-50">History</h2>
+      <ol className="mt-4 space-y-4">
+        {card.history.map((entry, index) => (
+          <li key={index} className="flex gap-3">
+            <span
+              className="mt-1.5 size-2 shrink-0 rounded-full bg-blue-500"
+              aria-hidden="true"
+            />
+            <div>
+              <p className="text-sm text-gray-900 dark:text-gray-50">
+                {historyLabel(entry.status, index)}
+              </p>
+              <p className="text-sm text-gray-500">
+                {merchant ? formatInZone(entry.at, merchant.timezone) : formatDate(entry.at)}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
     </div>
   )
+}
+
+function historyLabel(status: string, index: number): string {
+  if (index === 0) return "Issued"
+  if (status === "active") return "Reactivated"
+  if (status === "frozen") return "Frozen"
+  if (status === "cancelled") return "Cancelled"
+  return status
 }
 
 function Field({

@@ -9,6 +9,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   limit_too_high: "Spend limit cannot exceed 5,000,000 minor units.",
   currency_invalid: "Currency must be USD, EUR, or GBP.",
   category_invalid: "Category must be vendor subscriptions, ad spend, or contractor tools.",
+  currency_mismatch: "Currency must match the merchant's own currency.",
 }
 
 export function GET() {
@@ -33,6 +34,7 @@ export async function POST(request: NextRequest) {
     limit: typeof body.limit === "number" ? body.limit : NaN,
     currency: body.currency as Currency,
     category: typeof body.category === "string" ? body.category : undefined,
+    idempotencyKey: typeof body.idempotencyKey === "string" ? body.idempotencyKey : undefined,
   })
 
   if ("error" in result) {

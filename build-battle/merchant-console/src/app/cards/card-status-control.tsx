@@ -70,6 +70,20 @@ export function CardStatusControl({
           Unfreeze
         </button>
       )}
+      {current !== "cancelled" && (
+        <button
+          type="button"
+          onClick={() => {
+            if (window.confirm("Cancel this card? This can't be undone.")) {
+              transition("cancelled")
+            }
+          }}
+          disabled={pending}
+          className="text-xs font-medium text-red-600 hover:underline disabled:opacity-50 dark:text-red-400"
+        >
+          Cancel
+        </button>
+      )}
       {error && (
         <span role="alert" className="text-xs text-red-600 dark:text-red-400">
           {error}

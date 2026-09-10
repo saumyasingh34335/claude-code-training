@@ -91,6 +91,8 @@ export interface Card {
   spend: number
   /** ISO 8601, always UTC. */
   createdAt: string
+  /** Every status this card has held, oldest first. Starts with "active" at creation. */
+  history: { status: CardStatus; at: string }[]
 }
 
 export interface PaymentFilters {

@@ -2,9 +2,9 @@ import { Badge } from "@/components/Badge"
 import { CardStatus, DisputeStatus, PaymentStatus, PayoutStatus } from "@/data/types"
 import { cx } from "@/lib/utils"
 
-type AnyStatus = PaymentStatus | DisputeStatus | PayoutStatus | CardStatus
+export type AnyStatus = PaymentStatus | DisputeStatus | PayoutStatus | CardStatus
 
-const LABELS: Record<AnyStatus, string> = {
+export const LABELS: Record<AnyStatus, string> = {
   authorized: "Authorized",
   captured: "Captured",
   refunded: "Refunded",
@@ -22,7 +22,7 @@ const LABELS: Record<AnyStatus, string> = {
   cancelled: "Cancelled",
 }
 
-const DOTS: Record<AnyStatus, string> = {
+export const DOTS: Record<AnyStatus, string> = {
   authorized: "bg-blue-500 dark:bg-blue-500",
   captured: "bg-emerald-600 dark:bg-emerald-400",
   refunded: "bg-gray-500 dark:bg-gray-500",
@@ -40,7 +40,7 @@ const DOTS: Record<AnyStatus, string> = {
   cancelled: "bg-gray-500 dark:bg-gray-500",
 }
 
-const VARIANTS: Record<AnyStatus, "default" | "neutral" | "success" | "error" | "warning"> = {
+export const VARIANTS: Record<AnyStatus, "default" | "neutral" | "success" | "error" | "warning"> = {
   authorized: "default",
   captured: "success",
   refunded: "neutral",
